@@ -2,24 +2,19 @@
 const add = function(a,b) {
     return (a+b);
 }
-
 const subtract = function(a,b) {
     return (a-b);
 }
-
 const multiply = function(a,b) {
     return (a*b);
 }
-
 const divide = function(a,b) {
     if (b == 0) return "ERROR";
     return (a/b);
 }
-
 const percentage = function(a) {
     return (a/100);
 }
-
 const plusminus = function(a) {
     return (a*-1);
 }
@@ -109,6 +104,8 @@ const numbers = document.querySelectorAll('.console.number');
 const operators = document.querySelectorAll('.console.operator');
 const configs = document.querySelectorAll('.console.config');
 
+
+// ****** TO-DO - ADD KEYBOARD FUNCTIONALITY
 numbers.forEach( function(number) {
     number.addEventListener('click', e => {
         // Clear if display is currently operator
@@ -168,7 +165,22 @@ operators.forEach( function(operator) {
 })
 
 
-
-
-
+// *****TO-DO - INCLUDE CONFIG FUNCTIONS
+configs.forEach( function(config) {
+    config.addEventListener('click', e => { 
+        if (display.textContent.length > 0) { 
+            if (config.textContent == "AC") {
+                resetCalc();
+            }
+            else if (config.textContent == "+/-") {
+                const ret = plusminus(displayToFloat(display.textContent));
+                populateDisplay(ret);
+            }
+            else if (config.textContent == "%") {
+                const ret = percentage(displayToFloat(display.textContent));
+                populateDisplay(ret);
+            }
+        }
+    })
+});
 
