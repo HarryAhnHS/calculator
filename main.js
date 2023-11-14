@@ -52,17 +52,34 @@ const display = document.querySelector('.calc-display-number');
 const populateDisplay = function(n) {
     // Display n, but use scientific notation is length > 12, or round to fit display (12 chars) if decimal
     if (n.toString().length>12) {
-        if (n > 999999999999) {
-            // Scientific notation
-            display.textContent = n.toPrecision(6);
+        if (n>=0) {
+            if (n > 999999999999) {
+                // Scientific notation
+                display.textContent = n.toPrecision(6);
+            }
+            else if (n < 1 && n >= 0) {
+                // Edge case - if n starts with 0.xxx then 0 is not significant digit, so 1 less to fit display
+                display.textContent = n.toPrecision(10);
+            } 
+            else {
+                display.textContent = n.toPrecision(11);
+            }
         }
-        else if (n < 1 && n >= 0) {
-            // Edge case - if n starts with 0.xxx then 0 is not significant digit, so 1 less to fit display
-            display.textContent = n.toPrecision(10);
-        } 
-        else {
-            display.textContent = n.toPrecision(11);
+        else { // Negative values
+            if (n < -99999999999) {
+                // Scientific notation
+                display.textContent = n.toPrecision(5);
+            }
+            else if (n > -1 && n <= 0) {
+                // Edge case - if n starts with 0.xxx then 0 is not significant digit, so 1 less to fit display
+                display.textContent = n.toPrecision(9);
+            } 
+            else {
+                display.textContent = n.toPrecision(10);
+            }
+
         }
+        
     }
     else {
         display.textContent = n;
@@ -98,8 +115,7 @@ numbers.forEach( function(number) {
         if (display.textContent == '+' || display.textContent == '-' || display.textContent == 'x' || display.textContent == '/') {
             clearDisplay();
         }
-
-        // Edgecase - only 12 char fit inside display panel (MONOSPACE FONT)
+        // Edgecase - only 12 char fit at input panel (MONOSPACE FONT)
         if (display.textContent.replace(/\s+/g, '').length < 12) {
             // Edgecase- only one . allowed in display
             if (number.textContent == '.') {
@@ -117,18 +133,35 @@ numbers.forEach( function(number) {
 operators.forEach( function(operator) {
     operator.addEventListener('click', e => { 
         if (operator.textContent == '=') {
-            if (operandLeft_ != 0 || operator != "") {
+            if (operator_ != "" && operator_ != "=") {
                 operandRight_ = displayToFloat();
                 clearDisplay();
+                console.log(`${operandLeft_} ${operator_} ${operandRight_} = ${operate(operandLeft_,operandRight_,operator_)}`);
                 populateDisplay(operate(operandLeft_,operandRight_,operator_));
+                operator_ = "=";
             }
-        }  
+        }
         else {
-            if (display.textContent.length > 0) { // If display is not empty - set current to left operand global var
-                operator_ = operator.textContent; // set operator_ global variable for evaluation
-                operandLeft_ = displayToFloat();
-                clearDisplay();
-                populateDisplay(operator.textContent);
+            if (display.textContent.length > 0) { // If display is not empty 
+                
+                if (operator_ == "=" || operator_ == "") {
+                    operator_ = operator.textContent; // set operator_ global variable for evaluation
+                    operandLeft_ = displayToFloat(); // set current to left operand global var
+                    clearDisplay();
+                    populateDisplay(operator.textContent);
+                }
+                // Edgecase - chain operations without pressing '=' 
+                // ***** WORKING, but does not display chained answers, only store back end until "="
+                // ********* TODO-don't display operators, but change background color of button to show active state
+                else {
+                    operandRight_ = displayToFloat();
+                    clearDisplay();
+                    populateDisplay(operator.textContent);
+                    console.log(`${operandLeft_} ${operator_} ${operandRight_} = ${operate(operandLeft_,operandRight_,operator_)}`);
+                    operandLeft_ = operate(operandLeft_,operandRight_,operator_);
+                    operator_ = operator.textContent;
+                }
+
             }
         }
     })
