@@ -48,19 +48,43 @@ const operate = function(a,b, operator) {
     }
 }
 
+
+// Display Configuration
+const display = document.querySelector('.calc-display-number');
+
+// Append n to end of current display
+const populateDisplay = function(n) {
+    // Display function
+    display.textContent = (display.textContent.replace(/\s+/g, '')+n)
+};
+
+// Convert display to float value for internal calculation
+const displayToFloat = function() {
+    return parseFloat(display.textContent.replace(/\s+/g, ''));
+}
+
 // Event listeners for each number
 const numbers = document.querySelectorAll('.console.number');
 const operators = document.querySelectorAll('.console.operator');
 const configs = document.querySelectorAll('.console.config');
 
-numbers.forEach( function(currentValue) {
-    console.log(currentValue);
-    currentValue.addEventListener('click', updateDisplay());
+numbers.forEach( function(number) {
+    number.addEventListener('click', e => {
+        // Edgecase - only 12 char fit inside display panel (MONOSPACE FONT)
+        if (display.textContent.replace(/\s+/g, '').length <= 12) {
+            // Edgecase- only one . allowed in display
+            if (number.textContent == '.') {
+                if (!display.textContent.includes('.')) {
+                    display.textContent = display.textContent.replace(/\s+/g, '')+number.textContent;
+                }
+            } 
+            else {
+                display.textContent = display.textContent.replace(/\s+/g, '')+number.textContent;
+            }
+        }        
+    });
 });
 
 
 
-// Display function
-const populateDisplay = function() {
 
-};

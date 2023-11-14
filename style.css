@@ -1,5 +1,5 @@
 body {
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, Roboto, 'Segoe UI', Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family: 'Noto Sans Mono', monospace, -apple-system, BlinkMacSystemFont, Roboto, 'Segoe UI', Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     margin: 0;
     min-height: 100vh;
     display: flex;
@@ -88,6 +88,7 @@ img {
     width: 72px;
     height: 72px;
     font-size: 24px;
+    font-family: 'Noto Sans Mono', monospace;
     opacity: 1;
     transition: all 0.1s;
 }
