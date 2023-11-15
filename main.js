@@ -19,7 +19,6 @@ const plusminus = function(a) {
     return Number((a*-1).toPrecision(15));
 }
 
-console.log(percentage(0.99));
 // Variables for operands and operator
 var operandLeft_ = NaN;
 var operandRight_ = NaN;
@@ -60,8 +59,6 @@ const display = document.querySelector('.calc-display-number');
 const populateDisplay = function(n) {
     // Display n, but use scientific notation is length > 12, or round to fit display (12 chars) if decimal
     if (n.toString().length>12) {
-        console.log(n.toString().length);
-        console.log(n);
         if (n>=0) {
             if (n > 999999999999 || (n <= 0.0000001 && n > 0)) {
                 // Scientific notation
@@ -120,8 +117,11 @@ const configs = document.querySelectorAll('.console.config');
 
 
 // ****** TO-DO - ADD KEYBOARD FUNCTIONALITY
-numbers.forEach( function(number) {
+numbers.forEach(function(number) {
     number.addEventListener('click', e => {
+        if (operator_ == "=") {
+            resetCalc();
+        }
         // Clear if display is currently operator
         if (display.textContent == '+' || display.textContent == '-' || display.textContent == 'x' || display.textContent == '/') {
             clearDisplay();
@@ -203,4 +203,9 @@ configs.forEach( function(config) {
         }
     })
 });
+
+
+// KEYBOARD FUNCTIONALITY
+
+
 
