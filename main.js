@@ -1,24 +1,25 @@
 // Operation Functions 
 const add = function(a,b) {
-    return (a+b);
+    return Number((a-b).toPrecision(15));
 }
 const subtract = function(a,b) {
-    return (a-b);
+    return Number((a-b).toPrecision(15));
 }
 const multiply = function(a,b) {
-    return (a*b);
+    return Number((a*b).toPrecision(15));
 }
 const divide = function(a,b) {
     if (b == 0) return "ERROR";
-    return (a/b);
+    return Number((a/b).toPrecision(15));
 }
 const percentage = function(a) {
-    return (a/100);
+    return Number((a/100).toPrecision(15));
 }
 const plusminus = function(a) {
-    return (a*-1);
+    return Number((a*-1).toPrecision(15));
 }
 
+console.log(percentage(0.99));
 // Variables for operands and operator
 var operandLeft_ = NaN;
 var operandRight_ = NaN;
@@ -40,6 +41,18 @@ const operate = function(a,b, operator) {
     }
 }
 
+// Helper function to determine how many non-significant zeros
+const numNonSigZeroes = function(n) {
+    const digits = n.toString().split('');
+    let i = 0; 
+    while (digits[i] == '0' || digits[i] == '.') {
+        i++;
+    }
+    return i-1;
+};
+
+numNonSigZeroes(0.0000023);
+
 // Display Configuration
 const display = document.querySelector('.calc-display-number');
 
@@ -47,34 +60,35 @@ const display = document.querySelector('.calc-display-number');
 const populateDisplay = function(n) {
     // Display n, but use scientific notation is length > 12, or round to fit display (12 chars) if decimal
     if (n.toString().length>12) {
+        console.log(n.toString().length);
+        console.log(n);
         if (n>=0) {
-            if (n > 999999999999) {
+            if (n > 999999999999 || (n <= 0.0000001 && n > 0)) {
                 // Scientific notation
-                display.textContent = n.toPrecision(6);
+                display.textContent = n.toExponential(4);
             }
-            else if (n < 1 && n >= 0) {
-                // Edge case - if n starts with 0.xxx then 0 is not significant digit, so 1 less to fit display
-                display.textContent = n.toPrecision(10);
+            else if (n < 1 && n > 0) {
+                const nonSigZeroes = numNonSigZeroes(n);
+                display.textContent = n.toPrecision(11-nonSigZeroes);
             } 
             else {
                 display.textContent = n.toPrecision(11);
             }
         }
         else { // Negative values
-            if (n < -99999999999) {
+            if (n < -99999999999 || (n >= -0.0000001 && n < 0)) {
                 // Scientific notation
-                display.textContent = n.toPrecision(5);
+                display.textContent = n.toExponential(4);
             }
-            else if (n > -1 && n <= 0) {
-                // Edge case - if n starts with 0.xxx then 0 is not significant digit, so 1 less to fit display
-                display.textContent = n.toPrecision(9);
+            else if (n > -1 && n < 0) {
+                const nonSigZeroes = numNonSigZeroes(n);
+                display.textContent = n.toPrecision(10-nonSigZeroes);
             } 
             else {
                 display.textContent = n.toPrecision(10);
             }
 
         }
-        
     }
     else {
         display.textContent = n;
@@ -149,7 +163,6 @@ operators.forEach( function(operator) {
                 // Edgecase - chain operations without pressing '=' 
                 // ***** WORKING, but does not display chained answers, only store back end until "="
                 // ********* TODO-don't display operators, but change background color of button to show active state
-                
                 else {
                     // Don't run equation if display is currently at operator, so that operand can switch 
                     if (display.textContent != '+' && display.textContent != '-' && display.textContent != 'x' && display.textContent != '/') {
