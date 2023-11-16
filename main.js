@@ -50,8 +50,6 @@ const numNonSigZeroes = function(n) {
     return i-1;
 };
 
-numNonSigZeroes(0.0000023);
-
 // Display Configuration
 const display = document.querySelector('.calc-display-number');
 
@@ -105,8 +103,8 @@ const displayToFloat = function() {
 // Reset Calculator
 const resetCalc = function() {
     clearDisplay();
-    operandLeft_ = 0;
-    operandRight_ = 0;
+    operandLeft_ = NaN;
+    operandRight_ = NaN;
     operator_ = "";
 }
 
@@ -119,6 +117,7 @@ const configs = document.querySelectorAll('.console.config');
 // ****** TO-DO - ADD KEYBOARD FUNCTIONALITY
 numbers.forEach(function(number) {
     number.addEventListener('click', e => {
+        // reset calculator if number immediately after operation =
         if (operator_ == "=") {
             resetCalc();
         }
@@ -128,7 +127,7 @@ numbers.forEach(function(number) {
         }
         // Edgecase - only 12 char fit at input panel (MONOSPACE FONT)
         if (display.textContent.replace(/\s+/g, '').length < 12) {
-            // Edgecase- only one . allowed in display
+            // Edgecase- only one '.' decimal allowed in display
             if (number.textContent == '.') {
                 if (!display.textContent.includes('.') && display.textContent.replace(/\s+/g, '').length > 0) {
                     display.textContent = display.textContent.replace(/\s+/g, '')+number.textContent;
@@ -144,7 +143,7 @@ numbers.forEach(function(number) {
 operators.forEach( function(operator) {
     operator.addEventListener('click', e => { 
         if (operator.textContent == '=') {
-            if (operator_ != "" && operator_ != "=") {
+            if (operator_ != "" && operator_ != "=" && display.textContent != '+' && display.textContent != '-' && display.textContent != 'x' && display.textContent != '/') {
                 operandRight_ = displayToFloat();
                 clearDisplay();
                 console.log(`${operandLeft_} ${operator_} ${operandRight_} = ${operate(operandLeft_,operandRight_,operator_)}`);
@@ -159,6 +158,7 @@ operators.forEach( function(operator) {
                     operandLeft_ = displayToFloat(); // set current to left operand global var
                     clearDisplay();
                     populateDisplay(operator.textContent);
+                    operandRight_ = NaN;
                 }
                 // Edgecase - chain operations without pressing '=' 
                 // ***** WORKING, but does not display chained answers, only store back end until "="
@@ -172,6 +172,7 @@ operators.forEach( function(operator) {
                         console.log(`${operandLeft_} ${operator_} ${operandRight_} = ${operate(operandLeft_,operandRight_,operator_)}`);
                         operandLeft_ = operate(operandLeft_,operandRight_,operator_);
                         operator_ = operator.textContent;
+                        operandRight_ = NaN;
                     } 
                     else { // If display is currently operator, switch to new operator clicked
                         operator_ = operator.textContent; // set operator_ global variable for evaluation
@@ -207,5 +208,122 @@ configs.forEach( function(config) {
 
 // KEYBOARD FUNCTIONALITY
 
+window.addEventListener('keydown', function(e) {
+    // NUMBER KEY FUNCTIONALITY
+    console.log(e.key);
+    if (parseInt(e.key) || e.key == "0" || e.key == ".") {
+        // reset calculator if number immediately after operation =
+        if (operator_ == "=") {
+            resetCalc();
+        }
+        // Clear if display is currently operator
+        if (display.textContent == '+' || display.textContent == '-' || display.textContent == 'x' || display.textContent == '/') {
+            clearDisplay();
+        }
+        // Edgecase - only 12 char fit at input panel (MONOSPACE FONT)
+        if (display.textContent.replace(/\s+/g, '').length < 12) {
+            // Edgecase- only one '.' decimal allowed in display
+            if (e.key == '.') {
+                if (!display.textContent.includes('.') && display.textContent.replace(/\s+/g, '').length > 0) {
+                    display.textContent = display.textContent.replace(/\s+/g, '')+e.key;
+                }
+            }
+            else {
+                display.textContent = display.textContent.replace(/\s+/g, '')+e.key;
+            }
+        }
+    }
+    // OPERATORS KEY FUNCTIONALITY
+    if (e.key == "/" || e.key == "+" || e.key == "-" || e.key == "*" || e.key == "Enter") {
+        if (e.key == 'Enter') {
+            if (operator_ != "" && operator_ != "=" && display.textContent != '+' && display.textContent != '-' && display.textContent != 'x' && display.textContent != '/') {
+                operandRight_ = displayToFloat();
+                clearDisplay();
+                console.log(`${operandLeft_} ${operator_} ${operandRight_} = ${operate(operandLeft_,operandRight_,operator_)}`);
+                populateDisplay(operate(operandLeft_,operandRight_,operator_));
+                operator_ = "=";
+            }
+        }
+        else {
+            if (display.textContent.length > 0) { // If display is not empty 
+                if (operator_ == "=" || operator_ == "") {
+                    // EDGE CASE FOR KEY - * should be translated to 'x'
+                    if (e.key == "*") {
+                        operator_ = 'x';
+                        operandLeft_ = displayToFloat(); // set current to left operand global var
+                        clearDisplay();
+                        populateDisplay('x');
+                        operandRight_ = NaN;
+                    } 
+                    else {
+                        operator_ = e.key; // set operator_ global variable for evaluation
+                        operandLeft_ = displayToFloat(); // set current to left operand global var
+                        clearDisplay();
+                        populateDisplay(e.key);
+                        operandRight_ = NaN;
+                    }
+                }
+                // Edgecase - chain operations without pressing '=' 
+                // ***** WORKING, but does not display chained answers, only store back end until "="
+                // ********* TODO-don't display operators, but change background color of button to show active state
+                else {
+                    // Don't run equation if display is currently at operator, so that operand can switch 
+                    if (display.textContent != '+' && display.textContent != '-' && display.textContent != 'x' && display.textContent != '/') {
+                        // EDGE CASE FOR KEY - * should be translated to 'x'
+                        if (e.key == "*") {
+                            operandRight_ = displayToFloat();
+                            clearDisplay();
+                            populateDisplay('x');
+                            console.log(`${operandLeft_} ${operator_} ${operandRight_} = ${operate(operandLeft_,operandRight_,operator_)}`);
+                            operandLeft_ = operate(operandLeft_,operandRight_,operator_);
+                            operator_ = 'x';
+                            operandRight_ = NaN;   
+                        }
+                        else {
+                            operandRight_ = displayToFloat();
+                            clearDisplay();
+                            populateDisplay(e.key);
+                            console.log(`${operandLeft_} ${operator_} ${operandRight_} = ${operate(operandLeft_,operandRight_,operator_)}`);
+                            operandLeft_ = operate(operandLeft_,operandRight_,operator_);
+                            operator_ = e.key;
+                            operandRight_ = NaN;
+                        }
+                    } 
+                    else { // If display is currently operator, switch to new operator clicked
+                        // EDGE CASE FOR KEY - * should be translated to 'x'
+                        if (e.key == "*") {
+                            operator_ = 'x'; // set operator_ global variable for evaluation
+                            clearDisplay();
+                            populateDisplay('x');
+                        }
+                        else {
+                            operator_ = e.key; // set operator_ global variable for evaluation
+                            clearDisplay();
+                            populateDisplay(e.key);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // CONFIGURATION KEY FUNCTIONALITY
+    if (e.key == "c" || e.code == "Space" || e.key == "%") {
+        if (display.textContent.length > 0) { 
+            if (e.key == "c") {
+                resetCalc();
+            }
+            else if (e.code == "Space") {
+                e.preventDefault();
+                const ret = plusminus(displayToFloat(display.textContent));
+                populateDisplay(ret);
+            }
+            else if (e.key == "%") {
+                const ret = percentage(displayToFloat(display.textContent));
+                populateDisplay(ret);
+            }
+        }
+    }
+
+});
 
 
