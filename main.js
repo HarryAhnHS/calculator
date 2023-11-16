@@ -152,33 +152,41 @@ operators.forEach( function(operator) {
             }
         }
         else {
-            if (display.textContent.length > 0) { // If display is not empty 
-                if (operator_ == "=" || operator_ == "") {
+            if (operator_ == "=" || operator_ == "") {
+                // EDGECASE - IF '-' PRESSED AT RESET STATE, THEN ALLOW NEGATIVE INPUT 
+                if (operator_ == "" && Number.isNaN(operandLeft_)) {
+                    operator_ = operator.textContent; // set operator_ global variable for evaluation
+                    operandLeft_ = 0; // set current to left operand global var
+                    clearDisplay();
+                    populateDisplay(operator.textContent);
+                    operandRight_ = NaN;
+                }
+                else {
                     operator_ = operator.textContent; // set operator_ global variable for evaluation
                     operandLeft_ = displayToFloat(); // set current to left operand global var
                     clearDisplay();
                     populateDisplay(operator.textContent);
                     operandRight_ = NaN;
                 }
-                // Edgecase - chain operations without pressing '=' 
-                // ***** WORKING, but does not display chained answers, only store back end until "="
-                // ********* TODO-don't display operators, but change background color of button to show active state
-                else {
-                    // Don't run equation if display is currently at operator, so that operand can switch 
-                    if (display.textContent != '+' && display.textContent != '-' && display.textContent != 'x' && display.textContent != '/') {
-                        operandRight_ = displayToFloat();
-                        clearDisplay();
-                        populateDisplay(operator.textContent);
-                        console.log(`${operandLeft_} ${operator_} ${operandRight_} = ${operate(operandLeft_,operandRight_,operator_)}`);
-                        operandLeft_ = operate(operandLeft_,operandRight_,operator_);
-                        operator_ = operator.textContent;
-                        operandRight_ = NaN;
-                    } 
-                    else { // If display is currently operator, switch to new operator clicked
-                        operator_ = operator.textContent; // set operator_ global variable for evaluation
-                        clearDisplay();
-                        populateDisplay(operator.textContent);
-                    }
+            }
+            // Edgecase - chain operations without pressing '=' 
+            // ***** WORKING, but does not display chained answers, only store back end until "="
+            // ********* TODO-don't display operators, but change background color of button to show active state
+            else {
+                // Don't run equation if display is currently at operator, so that operand can switch 
+                if (display.textContent != '+' && display.textContent != '-' && display.textContent != 'x' && display.textContent != '/') {
+                    operandRight_ = displayToFloat();
+                    clearDisplay();
+                    populateDisplay(operator.textContent);
+                    console.log(`${operandLeft_} ${operator_} ${operandRight_} = ${operate(operandLeft_,operandRight_,operator_)}`);
+                    operandLeft_ = operate(operandLeft_,operandRight_,operator_);
+                    operator_ = operator.textContent;
+                    operandRight_ = NaN;
+                } 
+                else { // If display is currently operator, switch to new operator clicked
+                    operator_ = operator.textContent; // set operator_ global variable for evaluation
+                    clearDisplay();
+                    populateDisplay(operator.textContent);
                 }
             }
         }
@@ -247,8 +255,16 @@ window.addEventListener('keydown', function(e) {
             }
         }
         else {
-            if (display.textContent.length > 0) { // If display is not empty 
-                if (operator_ == "=" || operator_ == "") {
+            if (operator_ == "=" || operator_ == "") {
+                // EDGECASE - IF '-' PRESSED AT RESET STATE, THEN ALLOW NEGATIVE INPUT 
+                if (operator_ == "" && Number.isNaN(operandLeft_) && e.key != '*' && e.key != '/') {
+                    operator_ = e.key; // set operator_ global variable for evaluation
+                    operandLeft_ = 0; // set current to left operand global var
+                    clearDisplay();
+                    populateDisplay(e.key);
+                    operandRight_ = NaN;
+                }
+                else {
                     // EDGE CASE FOR KEY - * should be translated to 'x'
                     if (e.key == "*") {
                         operator_ = 'x';
@@ -265,44 +281,44 @@ window.addEventListener('keydown', function(e) {
                         operandRight_ = NaN;
                     }
                 }
-                // Edgecase - chain operations without pressing '=' 
-                // ***** WORKING, but does not display chained answers, only store back end until "="
-                // ********* TODO-don't display operators, but change background color of button to show active state
-                else {
-                    // Don't run equation if display is currently at operator, so that operand can switch 
-                    if (display.textContent != '+' && display.textContent != '-' && display.textContent != 'x' && display.textContent != '/') {
-                        // EDGE CASE FOR KEY - * should be translated to 'x'
-                        if (e.key == "*") {
-                            operandRight_ = displayToFloat();
-                            clearDisplay();
-                            populateDisplay('x');
-                            console.log(`${operandLeft_} ${operator_} ${operandRight_} = ${operate(operandLeft_,operandRight_,operator_)}`);
-                            operandLeft_ = operate(operandLeft_,operandRight_,operator_);
-                            operator_ = 'x';
-                            operandRight_ = NaN;   
-                        }
-                        else {
-                            operandRight_ = displayToFloat();
-                            clearDisplay();
-                            populateDisplay(e.key);
-                            console.log(`${operandLeft_} ${operator_} ${operandRight_} = ${operate(operandLeft_,operandRight_,operator_)}`);
-                            operandLeft_ = operate(operandLeft_,operandRight_,operator_);
-                            operator_ = e.key;
-                            operandRight_ = NaN;
-                        }
-                    } 
-                    else { // If display is currently operator, switch to new operator clicked
-                        // EDGE CASE FOR KEY - * should be translated to 'x'
-                        if (e.key == "*") {
-                            operator_ = 'x'; // set operator_ global variable for evaluation
-                            clearDisplay();
-                            populateDisplay('x');
-                        }
-                        else {
-                            operator_ = e.key; // set operator_ global variable for evaluation
-                            clearDisplay();
-                            populateDisplay(e.key);
-                        }
+            }
+            // Edgecase - chain operations without pressing '=' 
+            // ***** WORKING, but does not display chained answers, only store back end until "="
+            // ********* TODO-don't display operators, but change background color of button to show active state
+            else {
+                // Don't run equation if display is currently at operator, so that operand can switch 
+                if (display.textContent != '+' && display.textContent != '-' && display.textContent != 'x' && display.textContent != '/') {
+                    // EDGE CASE FOR KEY - * should be translated to 'x'
+                    if (e.key == "*") {
+                        operandRight_ = displayToFloat();
+                        clearDisplay();
+                        populateDisplay('x');
+                        console.log(`${operandLeft_} ${operator_} ${operandRight_} = ${operate(operandLeft_,operandRight_,operator_)}`);
+                        operandLeft_ = operate(operandLeft_,operandRight_,operator_);
+                        operator_ = 'x';
+                        operandRight_ = NaN;   
+                    }
+                    else {
+                        operandRight_ = displayToFloat();
+                        clearDisplay();
+                        populateDisplay(e.key);
+                        console.log(`${operandLeft_} ${operator_} ${operandRight_} = ${operate(operandLeft_,operandRight_,operator_)}`);
+                        operandLeft_ = operate(operandLeft_,operandRight_,operator_);
+                        operator_ = e.key;
+                        operandRight_ = NaN;
+                    }
+                } 
+                else { // If display is currently operator, switch to new operator clicked
+                    // EDGE CASE FOR KEY - * should be translated to 'x'
+                    if (e.key == "*") {
+                        operator_ = 'x'; // set operator_ global variable for evaluation
+                        clearDisplay();
+                        populateDisplay('x');
+                    }
+                    else {
+                        operator_ = e.key; // set operator_ global variable for evaluation
+                        clearDisplay();
+                        populateDisplay(e.key);
                     }
                 }
             }
