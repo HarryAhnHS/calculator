@@ -1,6 +1,6 @@
 // Operation Functions 
 const add = function(a,b) {
-    return Number((a-b).toPrecision(15));
+    return Number((a+b).toPrecision(15));
 }
 const subtract = function(a,b) {
     return Number((a-b).toPrecision(15));
@@ -212,6 +212,7 @@ window.addEventListener('keydown', function(e) {
     // NUMBER KEY FUNCTIONALITY
     console.log(e.key);
     if (parseInt(e.key) || e.key == "0" || e.key == ".") {
+        e.preventDefault();
         // reset calculator if number immediately after operation =
         if (operator_ == "=") {
             resetCalc();
@@ -235,6 +236,7 @@ window.addEventListener('keydown', function(e) {
     }
     // OPERATORS KEY FUNCTIONALITY
     if (e.key == "/" || e.key == "+" || e.key == "-" || e.key == "*" || e.key == "Enter") {
+        e.preventDefault();
         if (e.key == 'Enter') {
             if (operator_ != "" && operator_ != "=" && display.textContent != '+' && display.textContent != '-' && display.textContent != 'x' && display.textContent != '/') {
                 operandRight_ = displayToFloat();
@@ -308,12 +310,12 @@ window.addEventListener('keydown', function(e) {
     }
     // CONFIGURATION KEY FUNCTIONALITY
     if (e.key == "c" || e.code == "Space" || e.key == "%") {
+        e.preventDefault();
         if (display.textContent.length > 0) { 
             if (e.key == "c") {
                 resetCalc();
             }
             else if (e.code == "Space") {
-                e.preventDefault();
                 const ret = plusminus(displayToFloat(display.textContent));
                 populateDisplay(ret);
             }
@@ -321,6 +323,14 @@ window.addEventListener('keydown', function(e) {
                 const ret = percentage(displayToFloat(display.textContent));
                 populateDisplay(ret);
             }
+        }
+    }
+    
+    // DELETE KEY
+    if (e.code == "Backspace") {
+        e.preventDefault();
+        if (display.textContent.replace(/\s+/g, '').length > 0) {
+            display.textContent = display.textContent.replace(/\s+/g, '').slice(0,-1);
         }
     }
 
