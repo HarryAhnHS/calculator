@@ -146,13 +146,13 @@ img {
     align-items: center;
 }
 
-.github-a {
+.github-a img{
     opacity: 0.5;
-    transition: all 0.5s;
+    transition: all 300ms;
 }
 
-.github-a:hover {
+.github-a img:hover {
     opacity: 1;
-    transform: scale(1.2);
+    transform: rotate(360deg) scale(1.2);
 }
 
