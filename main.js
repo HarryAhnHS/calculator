@@ -13,10 +13,14 @@ const divide = function(a,b) {
     return Number((a/b).toPrecision(15));
 }
 const percentage = function(a) {
-    return Number((a/100).toPrecision(15));
+    if (!Number.isNaN(a)) {
+        return Number((a/100).toPrecision(15));
+    }
 }
 const plusminus = function(a) {
-    return Number((a*-1).toPrecision(15));
+    if (!Number.isNaN(a)) {
+        return Number((a*-1).toPrecision(15));
+    }
 }
 
 // Variables for operands and operator
