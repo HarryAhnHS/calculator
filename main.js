@@ -1,4 +1,4 @@
-// Operation Functions 
+// Operation Functions  - Accounted for float rounding error using toPrecision(15)
 const add = function(a,b) {
     return Number((a+b).toPrecision(15));
 }
@@ -23,6 +23,7 @@ const plusminus = function(a) {
 var operandLeft_ = 0;
 var operandRight_ = NaN;
 var operator_ = "";
+var operatorPressed = false;
 
 // Operate function 
 const operate = function(a,b, operator) {
@@ -42,7 +43,7 @@ const operate = function(a,b, operator) {
 
 // Helper function to determine how many non-significant zeros
 const numNonSigZeroes = function(n) {
-    const digits = n.toString().split('');
+    const digits = (Math.abs(n)).toString().split('');
     let i = 0; 
     while (digits[i] == '0' || digits[i] == '.') {
         i++;
@@ -106,6 +107,10 @@ const resetCalc = function() {
     operandLeft_ = 0;
     operandRight_ = NaN;
     operator_ = "";
+    operatorPressed = false;
+    operators.forEach(operator => {
+        operator.classList.remove('selected');
+    })
 }
 
 // Event listeners for each number
@@ -114,17 +119,22 @@ const operators = document.querySelectorAll('.console.operator');
 const configs = document.querySelectorAll('.console.config');
 
 
-// ****** TO-DO - ADD KEYBOARD FUNCTIONALITY
 numbers.forEach(function(number) {
     number.addEventListener('click', e => {
         // reset calculator if number immediately after operation =
         if (operator_ == "=") {
             resetCalc();
         }
-        // Clear if display is currently operator
-        if (display.textContent == '+' || display.textContent == '-' || display.textContent == 'x' || display.textContent == '/') {
+        // Clear display, and remove operator button highlight if operator previously pressed 
+        if (operatorPressed) {
             clearDisplay();
+            operators.forEach(operator => {
+                operator.classList.remove('selected');
+            })
         }
+
+
+        operatorPressed = false;
         // Edgecase - only 12 char fit at input panel (MONOSPACE FONT)
         if (display.textContent.replace(/\s+/g, '').length < 12) {
             // Edgecase- only one '.' decimal allowed in display
@@ -142,9 +152,8 @@ numbers.forEach(function(number) {
 
 operators.forEach( function(operator) {
     operator.addEventListener('click', e => { 
-
         if (operator.textContent == '=') {
-            if (operator_ != "" && operator_ != "=" && display.textContent != '+' && display.textContent != '-' && display.textContent != 'x' && display.textContent != '/') {
+            if (operator_ != "" && operator_ != "=" && !operatorPressed) {
                 operandRight_ = displayToFloat();
                 clearDisplay();
                 console.log(`${operandLeft_} ${operator_} ${operandRight_} = ${operate(operandLeft_,operandRight_,operator_)}`);
@@ -171,15 +180,17 @@ operators.forEach( function(operator) {
                 // EDGECASE - IF '-' PRESSED AT RESET STATE, THEN ALLOW NEGATIVE INPUT 
                 if (operator_ == "" && operandLeft_ == 0 && display.textContent.replace(/\s+/g, '').length == 0) {
                     operator_ = operator.textContent; // set operator_ global variable for evaluation
-                    clearDisplay();
-                    populateDisplay(operator.textContent);
+                    operatorPressed = true;
+                    // clearDisplay();
+                    // populateDisplay(operator.textContent);
                     operandRight_ = NaN;
                 }
                 else {
                     operator_ = operator.textContent; // set operator_ global variable for evaluation
                     operandLeft_ = displayToFloat(); // set current to left operand global var
-                    clearDisplay();
-                    populateDisplay(operator.textContent);
+                    operatorPressed = true;
+                    // clearDisplay();
+                    // populateDisplay(operator.textContent);
                     operandRight_ = NaN;
                 }
             }
@@ -188,19 +199,21 @@ operators.forEach( function(operator) {
             // ********* TODO-don't display operators, but change background color of button to show active state
             else {
                 // Don't run equation if display is currently at operator, so that operand can switch 
-                if (display.textContent != '+' && display.textContent != '-' && display.textContent != 'x' && display.textContent != '/') {
+                if (!operatorPressed) {
                     operandRight_ = displayToFloat();
                     clearDisplay();
-                    populateDisplay(operator.textContent);
+                    populateDisplay(operate(operandLeft_,operandRight_,operator_));
                     console.log(`${operandLeft_} ${operator_} ${operandRight_} = ${operate(operandLeft_,operandRight_,operator_)}`);
                     operandLeft_ = operate(operandLeft_,operandRight_,operator_);
                     operator_ = operator.textContent;
+                    operatorPressed = true;
                     operandRight_ = NaN;
                 } 
                 else { // If display is currently operator, switch to new operator clicked
                     operator_ = operator.textContent; // set operator_ global variable for evaluation
-                    clearDisplay();
-                    populateDisplay(operator.textContent);
+                    console.log('switched to : ', operator_)
+                    // clearDisplay();
+                    // populateDisplay(operator.textContent);
                 }
             }
         }
@@ -231,7 +244,7 @@ configs.forEach( function(config) {
 // KEYBOARD FUNCTIONALITY
 
 window.addEventListener('keydown', function(e) {
-    // NUMBER KEY FUNCTIONALITY
+    // NUMBER - KEY SUPPORT
     console.log(e.key);
     if (parseInt(e.key) || e.key == "0" || e.key == ".") {
         e.preventDefault();
@@ -240,9 +253,14 @@ window.addEventListener('keydown', function(e) {
             resetCalc();
         }
         // Clear if display is currently operator
-        if (display.textContent == '+' || display.textContent == '-' || display.textContent == 'x' || display.textContent == '/') {
+        if (operatorPressed) {
             clearDisplay();
+            operators.forEach(operator => {
+                operator.classList.remove('selected');
+            })
         }
+
+        operatorPressed = false;
         // Edgecase - only 12 char fit at input panel (MONOSPACE FONT)
         if (display.textContent.replace(/\s+/g, '').length < 12) {
             // Edgecase- only one '.' decimal allowed in display
@@ -256,11 +274,12 @@ window.addEventListener('keydown', function(e) {
             }
         }
     }
-    // OPERATORS KEY FUNCTIONALITY
+    
+    // OPERATOR KEYS SUPPORT
     if (e.key == "/" || e.key == "+" || e.key == "-" || e.key == "*" || e.key == "Enter") {
         e.preventDefault();
         if (e.key == 'Enter') {
-            if (operator_ != "" && operator_ != "=" && display.textContent != '+' && display.textContent != '-' && display.textContent != 'x' && display.textContent != '/') {
+            if (operator_ != "" && operator_ != "=" && !operatorPressed) {
                 operandRight_ = displayToFloat();
                 clearDisplay();
                 console.log(`${operandLeft_} ${operator_} ${operandRight_} = ${operate(operandLeft_,operandRight_,operator_)}`);
@@ -294,40 +313,36 @@ window.addEventListener('keydown', function(e) {
                     }
                 }
             })
-            
 
+            // Non chaining operators
             if (operator_ == "=" || operator_ == "") {
                 // EDGECASE - IF '-' PRESSED AT RESET STATE, THEN ALLOW NEGATIVE INPUT 
                 if (operator_ == "" && operandLeft_ == 0 && display.textContent.replace(/\s+/g, '').length == 0) {
                     if (e.key == '*') {
                         operator_ = 'x'; // set operator_ global variable for evaluation
                         clearDisplay();
-                        populateDisplay('x');
                         operandRight_ = NaN;
                     }
                     else {
                         operator_ = e.key; // set operator_ global variable for evaluation
                         clearDisplay();
-                        populateDisplay(e.key);
                         operandRight_ = NaN;
                     }
                 }
                 else {
-                    // EDGE CASE FOR KEY - * should be translated to 'x'
-                    if (e.key == "*") {
-                        operator_ = 'x';
+                    if (e.key == '*') {
+                        operator_ = 'x'; // set operator_ global variable for evaluation
                         operandLeft_ = displayToFloat(); // set current to left operand global var
-                        clearDisplay();
-                        populateDisplay('x');
+                        operatorPressed = true;
                         operandRight_ = NaN;
-                    } 
+                    }
                     else {
                         operator_ = e.key; // set operator_ global variable for evaluation
                         operandLeft_ = displayToFloat(); // set current to left operand global var
-                        clearDisplay();
-                        populateDisplay(e.key);
+                        operatorPressed = true;
                         operandRight_ = NaN;
                     }
+                    
                 }
             }
             // Edgecase - chain operations without pressing '=' 
@@ -335,43 +350,40 @@ window.addEventListener('keydown', function(e) {
             // ********* TODO-don't display operators, but change background color of button to show active state
             else {
                 // Don't run equation if display is currently at operator, so that operand can switch 
-                if (display.textContent != '+' && display.textContent != '-' && display.textContent != 'x' && display.textContent != '/') {
-                    // EDGE CASE FOR KEY - * should be translated to 'x'
-                    if (e.key == "*") {
+                if (!operatorPressed) {
+                    if (e.key == '*') {
                         operandRight_ = displayToFloat();
                         clearDisplay();
-                        populateDisplay('x');
+                        populateDisplay(operate(operandLeft_,operandRight_,operator_));
                         console.log(`${operandLeft_} ${operator_} ${operandRight_} = ${operate(operandLeft_,operandRight_,operator_)}`);
                         operandLeft_ = operate(operandLeft_,operandRight_,operator_);
                         operator_ = 'x';
-                        operandRight_ = NaN;   
+                        operatorPressed = true;
+                        operandRight_ = NaN;
                     }
                     else {
                         operandRight_ = displayToFloat();
                         clearDisplay();
-                        populateDisplay(e.key);
+                        populateDisplay(operate(operandLeft_,operandRight_,operator_));
                         console.log(`${operandLeft_} ${operator_} ${operandRight_} = ${operate(operandLeft_,operandRight_,operator_)}`);
                         operandLeft_ = operate(operandLeft_,operandRight_,operator_);
                         operator_ = e.key;
+                        operatorPressed = true;
                         operandRight_ = NaN;
                     }
                 } 
                 else { // If display is currently operator, switch to new operator clicked
-                    // EDGE CASE FOR KEY - * should be translated to 'x'
-                    if (e.key == "*") {
-                        operator_ = 'x'; // set operator_ global variable for evaluation
-                        clearDisplay();
-                        populateDisplay('x');
+                    if (e.key == '*') {
+                        operator_ = 'x';
                     }
                     else {
                         operator_ = e.key; // set operator_ global variable for evaluation
-                        clearDisplay();
-                        populateDisplay(e.key);
                     }
                 }
             }
-        }
+        }   
     }
+
     // CONFIGURATION KEY FUNCTIONALITY
     if (e.key == "c" || e.code == "Space" || e.key == "%") {
         e.preventDefault();
