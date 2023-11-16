@@ -33,7 +33,7 @@ img {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-bottom: 150px;
+    padding-bottom: 100px;
 }
 
 /* Calculator Base */
@@ -131,7 +131,7 @@ img {
 .footer {
     background-color: #eeeeee;
     color: black;
-    padding: 30px;
+    padding: 40px;
     display: flex;
     justify-content: center;
     align-items: center;
