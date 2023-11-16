@@ -15,10 +15,17 @@ img {
 .header {
     background-color: white;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding-top: 40px;
+    padding-top: 20px;
     color: black;
+    font-size: 24px;
+}
+
+.header-sub {
+    font-size: 12px;
+    font-style: italic;
 }
 
 .content {
@@ -26,6 +33,7 @@ img {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding-bottom: 150px;
 }
 
 /* Calculator Base */
@@ -95,7 +103,7 @@ img {
 }
 
 .console:hover {
-    opacity: 0.9;
+    opacity: 0.75;
 }
 
 .console.config {
@@ -123,7 +131,7 @@ img {
 .footer {
     background-color: #eeeeee;
     color: black;
-    padding: 50px;
+    padding: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -131,8 +139,8 @@ img {
 
 .github-logo {
     margin-left: 10px;
-    width: 30px;
-    height: 30px;
+    width: 24px;
+    height: 24px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -140,9 +148,11 @@ img {
 
 .github-a {
     opacity: 0.5;
+    transition: all 0.5s;
 }
 
 .github-a:hover {
     opacity: 1;
+    transform: scale(1.2);
 }
 

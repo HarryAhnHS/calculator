@@ -211,7 +211,6 @@ operators.forEach( function(operator) {
                 } 
                 else { // If display is currently operator, switch to new operator clicked
                     operator_ = operator.textContent; // set operator_ global variable for evaluation
-                    console.log('switched to : ', operator_)
                     // clearDisplay();
                     // populateDisplay(operator.textContent);
                 }
@@ -245,7 +244,6 @@ configs.forEach( function(config) {
 
 window.addEventListener('keydown', function(e) {
     // NUMBER - KEY SUPPORT
-    console.log(e.key);
     if (parseInt(e.key) || e.key == "0" || e.key == ".") {
         e.preventDefault();
         // reset calculator if number immediately after operation =
