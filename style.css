@@ -108,6 +108,12 @@ img {
     color: white;
 }
 
+.console.operator.selected {
+    transition: all 0.5s;
+    background-color: white;
+    color: #f48c06;
+}
+
 .console.number {
     background-color: #495057;
     color: white;

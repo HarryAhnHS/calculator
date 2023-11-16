@@ -152,9 +152,11 @@ operators.forEach( function(operator) {
             }
         }
         else {
+            // Change background color 
+            operator.classList.add('selected');
             if (operator_ == "=" || operator_ == "") {
                 // EDGECASE - IF '-' PRESSED AT RESET STATE, THEN ALLOW NEGATIVE INPUT 
-                if (operator_ == "" && Number.isNaN(operandLeft_)) {
+                if (operator_ == "" && Number.isNaN(operandLeft_)&& operator.textContent != '*' && operator.textContent != '/') {
                     operator_ = operator.textContent; // set operator_ global variable for evaluation
                     operandLeft_ = 0; // set current to left operand global var
                     clearDisplay();
