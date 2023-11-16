@@ -20,7 +20,7 @@ const plusminus = function(a) {
 }
 
 // Variables for operands and operator
-var operandLeft_ = NaN;
+var operandLeft_ = 0;
 var operandRight_ = NaN;
 var operator_ = "";
 
@@ -103,7 +103,7 @@ const displayToFloat = function() {
 // Reset Calculator
 const resetCalc = function() {
     clearDisplay();
-    operandLeft_ = NaN;
+    operandLeft_ = 0;
     operandRight_ = NaN;
     operator_ = "";
 }
@@ -153,12 +153,11 @@ operators.forEach( function(operator) {
         }
         else {
             // Change background color 
-            operator.classList.add('selected');
+            // operator.classList.add('selected');
             if (operator_ == "=" || operator_ == "") {
                 // EDGECASE - IF '-' PRESSED AT RESET STATE, THEN ALLOW NEGATIVE INPUT 
-                if (operator_ == "" && Number.isNaN(operandLeft_)&& operator.textContent != '*' && operator.textContent != '/') {
+                if (operator_ == "" && operandLeft_ == 0 && display.textContent.replace(/\s+/g, '').length == 0) {
                     operator_ = operator.textContent; // set operator_ global variable for evaluation
-                    operandLeft_ = 0; // set current to left operand global var
                     clearDisplay();
                     populateDisplay(operator.textContent);
                     operandRight_ = NaN;
@@ -175,6 +174,7 @@ operators.forEach( function(operator) {
             // ***** WORKING, but does not display chained answers, only store back end until "="
             // ********* TODO-don't display operators, but change background color of button to show active state
             else {
+                console.log('Current operator: ', operator_);
                 // Don't run equation if display is currently at operator, so that operand can switch 
                 if (display.textContent != '+' && display.textContent != '-' && display.textContent != 'x' && display.textContent != '/') {
                     operandRight_ = displayToFloat();
@@ -259,12 +259,19 @@ window.addEventListener('keydown', function(e) {
         else {
             if (operator_ == "=" || operator_ == "") {
                 // EDGECASE - IF '-' PRESSED AT RESET STATE, THEN ALLOW NEGATIVE INPUT 
-                if (operator_ == "" && Number.isNaN(operandLeft_) && e.key != '*' && e.key != '/') {
-                    operator_ = e.key; // set operator_ global variable for evaluation
-                    operandLeft_ = 0; // set current to left operand global var
-                    clearDisplay();
-                    populateDisplay(e.key);
-                    operandRight_ = NaN;
+                if (operator_ == "" && operandLeft_ == 0 && display.textContent.replace(/\s+/g, '').length == 0) {
+                    if (e.key == '*') {
+                        operator_ = 'x'; // set operator_ global variable for evaluation
+                        clearDisplay();
+                        populateDisplay('x');
+                        operandRight_ = NaN;
+                    }
+                    else {
+                        operator_ = e.key; // set operator_ global variable for evaluation
+                        clearDisplay();
+                        populateDisplay(e.key);
+                        operandRight_ = NaN;
+                    }
                 }
                 else {
                     // EDGE CASE FOR KEY - * should be translated to 'x'
