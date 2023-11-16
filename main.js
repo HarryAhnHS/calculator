@@ -142,6 +142,7 @@ numbers.forEach(function(number) {
 
 operators.forEach( function(operator) {
     operator.addEventListener('click', e => { 
+
         if (operator.textContent == '=') {
             if (operator_ != "" && operator_ != "=" && display.textContent != '+' && display.textContent != '-' && display.textContent != 'x' && display.textContent != '/') {
                 operandRight_ = displayToFloat();
@@ -149,11 +150,23 @@ operators.forEach( function(operator) {
                 console.log(`${operandLeft_} ${operator_} ${operandRight_} = ${operate(operandLeft_,operandRight_,operator_)}`);
                 populateDisplay(operate(operandLeft_,operandRight_,operator_));
                 operator_ = "=";
+
+                // Remove existing operator background color class
+                // Loop through to find the operator node with current operator_ 
+                operators.forEach(operator => {
+                    operator.classList.remove('selected');
+                })
             }
         }
         else {
-            // Change background color 
-            // operator.classList.add('selected');
+            // Remove existing operator background color class
+            // Loop through to find the operator node with current operator_ 
+            operators.forEach(operator => {
+                operator.classList.remove('selected');
+            })
+            // Change background color of new selected operator 
+            operator.classList.add('selected');
+
             if (operator_ == "=" || operator_ == "") {
                 // EDGECASE - IF '-' PRESSED AT RESET STATE, THEN ALLOW NEGATIVE INPUT 
                 if (operator_ == "" && operandLeft_ == 0 && display.textContent.replace(/\s+/g, '').length == 0) {
@@ -174,7 +187,6 @@ operators.forEach( function(operator) {
             // ***** WORKING, but does not display chained answers, only store back end until "="
             // ********* TODO-don't display operators, but change background color of button to show active state
             else {
-                console.log('Current operator: ', operator_);
                 // Don't run equation if display is currently at operator, so that operand can switch 
                 if (display.textContent != '+' && display.textContent != '-' && display.textContent != 'x' && display.textContent != '/') {
                     operandRight_ = displayToFloat();
@@ -254,9 +266,35 @@ window.addEventListener('keydown', function(e) {
                 console.log(`${operandLeft_} ${operator_} ${operandRight_} = ${operate(operandLeft_,operandRight_,operator_)}`);
                 populateDisplay(operate(operandLeft_,operandRight_,operator_));
                 operator_ = "=";
+
+                // Remove existing operator background color class
+                // Loop through to find the operator node with current operator_ 
+                operators.forEach(operator => {
+                    operator.classList.remove('selected');
+                })
             }
         }
         else {
+            // Remove existing operator background color class
+            // Loop through to find the operator node with current operator_ 
+            operators.forEach(operator => {
+                operator.classList.remove('selected');
+            })
+            // Change background color of new selected operator - Loop through and find appropriate node based on key
+            operators.forEach(operator => {
+                if (e.key == '*') {
+                    // EDGE CASE FOR KEY - * should be translated to 'x'
+                    if (operator.textContent == 'x') {
+                        operator.classList.add('selected');
+                    }
+                }
+                else {
+                    if (operator.textContent == e.key) {
+                        operator.classList.add('selected');
+                    }
+                }
+            })
+
             if (operator_ == "=" || operator_ == "") {
                 // EDGECASE - IF '-' PRESSED AT RESET STATE, THEN ALLOW NEGATIVE INPUT 
                 if (operator_ == "" && operandLeft_ == 0 && display.textContent.replace(/\s+/g, '').length == 0) {
