@@ -294,6 +294,7 @@ window.addEventListener('keydown', function(e) {
                     }
                 }
             })
+            
 
             if (operator_ == "=" || operator_ == "") {
                 // EDGECASE - IF '-' PRESSED AT RESET STATE, THEN ALLOW NEGATIVE INPUT 
